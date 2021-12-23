@@ -125,22 +125,19 @@ contract Kasbeer721 is ERC721, Whitelistable, Pausable {
 	//// --------
 
 	//@dev Controls the contract-level metadata to include things like royalties
-	function contractURI()
-		public view returns(string memory)
+	function contractURI() public view returns(string memory)
 	{
 		return _contractUri;
 	}
 
 	//@dev Ability to change the contract URI
-	function updateContractUri(string memory updatedContractUri) 
-		isSquad public
+	function updateContractUri(string memory updatedContractUri) public isSquad
 	{
         _contractUri = updatedContractUri;
     }
 
     //@dev Allows us to withdraw funds collected
-	function withdraw(address payable wallet, uint256 amount)
-		isSquad public
+	function withdraw(address payable wallet, uint256 amount) public isSquad
 	{
 		require(amount <= address(this).balance,
 			"Kasbeer721: Insufficient funds to withdraw");
