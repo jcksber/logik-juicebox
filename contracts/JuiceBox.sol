@@ -5,7 +5,7 @@
  * Created: October 27, 2021
  *
  * Price: FREE
- * Rinkeby: 0x00Bb92fC64ABa99695B23AA6825aaFFf0346010A
+ * Rinkeby: 0x09494437a042494eAdA9801A85eE494cFB27D75b
  * Mainnet:
  *
  * Description: An ERC-721 token that will be claimable by anyone who owns 'the Plug'
@@ -104,10 +104,10 @@ contract JuiceBox is Kasbeer721 {
 
     //@dev Allows owners to mint for free
     function mint(address to) public virtual override isSquad boxAvailable
-    	returns (uint256 tid, string memory hash)
+    	returns (uint256 tid)
     {
     	tid = _mintInternal(to);
-    	hash = _assignHash(tid, 1);
+    	_assignHash(tid, 1);
     }
 
     //@dev Claim a JuiceBox if you're a Plug holder
