@@ -38,8 +38,11 @@ contract JuiceBox is Kasbeer721 {
 	mapping (uint256 => string) internal _tokenToHash;
 
 	//@dev Initial production hashes
-	string [NUM_ASSETS] boxHashes = ["FILL_ME_IN", "FILL_ME_IN", 
-									 "FILL_ME_IN", "FILL_ME_IN"];//cherry, berry, kiwi, lemon
+	string [NUM_ASSETS] boxHashes = ["QmeiegMwsbZbaV8NXMkzSAQh86NYDty2L6spgHq8yYtpNf", 
+									 "QmYrWUYmzr2BzeUTXQuzWDVZWyAp4QBcUe9K9Y2xzKDEcm", 
+									 "QmYwFgSkafPN6eTPw8ge6dbbTVQ7zooPiX9jubXD9Xbyqy", 
+									 "QmW2fhH3KqbQNK7dqB8FrgD29DQfe31sbnZzi1AF1JXRGA"];
+									 //cherry, berry, kiwi, lemon
 
 	//@dev Associated weights of probability for hashes
 	uint16 [NUM_ASSETS] boxWeights = [60, 20, 15, 5];//cherry, berry, kiwi, lemon
