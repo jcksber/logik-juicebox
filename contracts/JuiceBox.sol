@@ -10,10 +10,10 @@
  *
  * Description: An ERC-721 token that will be claimable by anyone who owns 'the Plug'
  *
- *  - There will be 3 variations, each with a different rarity (based on how likely it is
- *    to receive, i.e. v1:85%, v2:10%, v3:5%)
+ *  - There will be 4 variations, each with a different rarity (based on how likely it is
+ *    to receive, i.e. v1:60%, v2:20%, v3:15%, v4:5%)
  *  - Owners with multiple Plugs will benefit through a distribution scheme that shifts 
- *    the probability of minting each variation towards 33%
+ *    the probability of minting each variation towards 25%
  */
 
 pragma solidity >=0.5.16 <0.9.0;
