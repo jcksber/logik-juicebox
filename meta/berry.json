@@ -1,0 +1,12 @@
+{
+	"name" : "Juice Box | Hustle Berry Blue",
+    "description" : "The Juice Box project is social commentary on targeted food marketing and food deserts in low-income neighborhoods. Children are drawn to colorfully-packaged snacks and drinks that have little nutritional value and simply stimulate the palate with sugar, fat, and salt. Quick fixes like sweet drinks, chips, and cup noodles do not provide real nutrition and merely momentarily satisfy hunger, resulting in more hunger and the psychological effects of food scarcity not long after consumption.\n\nThe foods that kids enjoy in their youth naturally have an effect on their healthy eating habits as adults. Food deserts are a structural impediment to the social advancement of those affected because brains cannot function optimally without proper fuel; skills and social capital will not increase when one cannot put the mind to its best use. If one’s marketable skills and social capital increase, so too does access to high-quality nutrition, creating a virtuous cycle. Conversely, adults who continue to lack decent nutrition access find themselves in the vicious circle of declining health and wealth.\n\nEach juice box indicates its nutritional value on its label, and those with the highest nutrition are the most rare NFTs – in the same way that only those in society with the greatest financial resources may avail themselves of the best foods, fitness clubs, healthcare, and living environments.",
+    "image" : "https://ipfs.io/ipfs/QmR9rxZc3XL72dsvbY7SwaBAd1YhoSN4MgmxeL1q5D3S1j",
+    "animation_url" : "https://ipfs.io/ipfs/QmVEVZ35QJajToTCWPqqsRfzDaxgm6gyQh2D5Teb5iXiot",
+    "attributes": [
+    	{
+    		"trait_type": "Rarity",
+    		"value": "Rare"
+    	}
+    ]
+}

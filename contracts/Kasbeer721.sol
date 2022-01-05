@@ -38,9 +38,8 @@ contract Kasbeer721 is ERC721, Whitelistable, Pausable {
 	Counters.Counter internal _tokenIds;
 
 	//@dev Important numbers
-	uint constant NUM_ASSETS = 3;//3 juice box variations
-	uint constant NUM_PLUGS = 888;//888 plugs total
-	uint constant MAX_NUM_TOKENS = 444;//NOTE: change later!
+	uint constant NUM_ASSETS = 4;//4 juice box variations
+	uint constant MAX_NUM_TOKENS = 514;//NOTE: change later!
 
 	//@dev Properties
 	string internal _contractUri;
@@ -180,7 +179,7 @@ contract Kasbeer721 is ERC721, Whitelistable, Pausable {
 		}
 	}
 
-	//@dev Determin if an address is a smart contract 
+	//@dev Determine if an address is a smart contract 
 	function _isContract(address a) internal view returns (bool)
 	{
 		uint32 size;

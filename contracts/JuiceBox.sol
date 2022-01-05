@@ -37,12 +37,12 @@ contract JuiceBox is Kasbeer721 {
 	//@dev Keep track of which token ID is associated with which hash
 	mapping (uint256 => string) internal _tokenToHash;
 
-	//@dev Associated weights of probability for hashes
-	uint16 [NUM_ASSETS] boxWeights = [85, 10, 5];
-	uint16 [NUM_ASSETS] boxWeightModifiers = [52, 23, 28];
-
 	//@dev Initial production hashes
-	string [NUM_ASSETS] boxHashes = ["FILL_ME_IN", "FILL_ME_IN", "FILL_ME_IN"];
+	string [NUM_ASSETS] boxHashes = ["FILL_ME_IN", "FILL_ME_IN", 
+									 "FILL_ME_IN", "FILL_ME_IN"];//cherry, berry, kiwi, lemon
+
+	//@dev Associated weights of probability for hashes
+	uint16 [NUM_ASSETS] boxWeights = [60, 20, 15, 5];//cherry, berry, kiwi, lemon
 
 	constructor() Kasbeer721("Juice Box", "") {
 		_whitelistActive = true;
@@ -71,16 +71,9 @@ contract JuiceBox is Kasbeer721 {
 	//@dev Override 'tokenURI' to account for asset/hash cycling
 	function tokenURI(uint256 tokenId) 
 		public view virtual override tokenExists(tokenId) 
-		returns (string memory uri) 
+		returns (string memory) 
 	{	
-		uri = string(abi.encodePacked(_baseURI(), _tokenToHash[tokenId]));
-		return uri;
-	}
-
-	function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-		internal virtual override
-	{
-		// DO WE WANT TO PREVENT PEOPLE FROM HAVING MORE THAN ONE IN THEIR WALLET?
+		return string(abi.encodePacked(_baseURI(), _tokenToHash[tokenId]));
 	}
 
 	//// ----------------------
@@ -95,22 +88,11 @@ contract JuiceBox is Kasbeer721 {
 	}
 
 	//@dev Allows us to update the IPFS hash values (one at a time)
-	function updateHash(uint8 idx, string memory str) 
+	// 0:cherry, 1:berry, 2:kiwi, 3:lemon
+	function updateHashForIndex(uint8 idx, string memory str) 
 		public isSquad hashIndexInRange(idx)
 	{
 		boxHashes[idx] = str;
-	}
-
-	//@dev Determine if '_assetHash' is one of the IPFS hashes in asset hashes
-	function _hashExists(string memory assetHash) internal view returns (bool) 
-	{
-		uint8 i;
-		for (i = 0; i < NUM_ASSETS; i++) {
-			if (_stringsEqual(assetHash, boxHashes[i])) {
-				return true;
-			}
-		}
-		return false;
 	}
 
     // ------------------
@@ -119,11 +101,9 @@ contract JuiceBox is Kasbeer721 {
 
     //@dev Allows owners to mint for free
     function mint(address to) public virtual override isSquad boxAvailable
-    	returns (uint256 tid)
+    	returns (uint256)
     {
-    	tid = _mintInternal(to);
-
-    	return tid;
+    	return _mintInternal(to);
     }
 
     //@dev Claim a JuiceBox if you're a Plug holder
@@ -132,16 +112,14 @@ contract JuiceBox is Kasbeer721 {
     	returns (uint256 tid, string memory hash)
     {
     	require(!_boxHolders[to], "JuiceBox: cannot claim more than 1");
-    	require(!_isContract(to), "JuiceBox: contracts cannot mint");
+    	require(!_isContract(to), "JuiceBox: silly rabbit :P");
 
     	tid = _mintInternal(to);
     	hash = _assignHash(tid, numPlugs);
-
-    	return (tid, hash);
     }
 
-	//@dev Mints a single Juice Box & updates `boxHolders` accordingly
-	function _mintInternal(address to) internal virtual returns (uint256 newId)
+	//@dev Mints a single Juice Box & updates `_boxHolders` accordingly
+	function _mintInternal(address to) internal virtual returns (uint256)
 	{
 		_incrementTokenId();
 
@@ -157,23 +135,20 @@ contract JuiceBox is Kasbeer721 {
 
 	//@dev Based on the number of Plugs owned by the sender, randomly select 
 	// a JuiceBox hash that will be associated with their token id
-	function _assignHash(uint256 tokenId, uint16 numPlugs) private tokenExists(tokenId)
+	function _assignHash(uint256 tokenId, uint8 numPlugs) private tokenExists(tokenId)
 		returns (string memory hash)
 	{
 		uint8[] memory weights = new uint8[](NUM_ASSETS);
-		/*
-		85 - 52*((owned-1)/total) //85% -> 33%
-		10 + 23*((owned-1)/total) //10% -> 33%
-		5 +  28*((owner-1)/total) // 5% -> 33%
-		*/
-		//calculate new weights based on `numPlugs` 
-		weights[0] = uint8(boxWeights[0] - boxWeightModifiers[0]*((numPlugs-1)/NUM_PLUGS));
-		weights[1] = uint8(boxWeights[1] + boxWeightModifiers[1]*((numPlugs-1)/NUM_PLUGS));
-		weights[2] = uint8(boxWeights[2] + boxWeightModifiers[2]*((numPlugs-1)/NUM_PLUGS));
+		//calculate new weights based on `numPlugs`
+		if (numPlugs > 10) numPlugs = 10;
+		weights[0] = uint8(boxWeights[0] - 35*((numPlugs-1)/10));//cherry: 60% -> 25%
+		weights[1] = uint8(boxWeights[1] +  5*((numPlugs-1)/10));//berry:  20% -> 25%
+		weights[2] = uint8(boxWeights[2] + 10*((numPlugs-1)/10));//kiwi:   15% -> 25%
+		weights[3] = uint8(boxWeights[3] + 20*((numPlugs-1)/10));//lemon:   5% -> 25%
 
-		uint8 i;
 		uint16 rnd = random() % 100;//should be b/n 0 & 100
 		//randomly select a juice box hash
+		uint8 i;
 		for (i = 0; i < NUM_ASSETS; i++) {
 			if (rnd < weights[i]) {
 				hash = boxHashes[i];
@@ -183,7 +158,7 @@ contract JuiceBox is Kasbeer721 {
 		}
 		//assign the selected hash to this token id
 		_tokenToHash[tokenId] = hash;
-		
+
 		return hash;
 	}
 
@@ -193,9 +168,15 @@ contract JuiceBox is Kasbeer721 {
 		_boxHolders[a] = true;
 	}
 
+	function getHashForTid(uint256 tid) public view tokenExists(tid) 
+		returns (string memory)
+	{
+		return _tokenToHash[tid];
+	}
+
 	//@dev Pseudo-random number generator
 	function random() public view returns (uint16 rnd)
 	{
 		return uint16(uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, boxWeights))));
-	}//NOTE: should we use boxWeights or something else...?
+	}
 }
