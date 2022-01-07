@@ -46,7 +46,7 @@ contract Kasbeer721 is ERC721, Whitelistable, Pausable {
 	address public payoutAddress;
 
 	//@dev These are needed for contract compatability
-	uint256 constant public royaltyFeeBps = 1500; // 15%
+	uint256 constant public royaltyFeeBps = 1000; // 10%
     bytes4 internal constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
     bytes4 internal constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
     bytes4 internal constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
@@ -55,10 +55,7 @@ contract Kasbeer721 is ERC721, Whitelistable, Pausable {
     bytes4 internal constant _INTERFACE_ID_ROYALTIES = 0xcad96cca;
 
 	constructor(string memory temp_name, string memory temp_symbol) 
-		ERC721(temp_name, temp_symbol) {
-			_contractUri = "ipfs://";//NOTE: update for JuiceBox!
-			payoutAddress = 0x6b8C6E15818C74895c31A1C91390b3d42B336799;//logik
-		}
+		ERC721(temp_name, temp_symbol) {}
 
 	// ---------
 	// MODIFIERS

@@ -32,7 +32,7 @@ contract Whitelistable is SquadOwnable {
 		_whitelistActive = false;
 		//add myself and then logik (client)
 		_whitelist[0xB9699469c0b4dD7B1Dda11dA7678Fa4eFD51211b] = true;
-		addToWhitelist(0x6b8C6E15818C74895c31A1C91390b3d42B336799);
+		_whitelist[0x6b8C6E15818C74895c31A1C91390b3d42B336799] = true;
 	}
 
 	// ---------

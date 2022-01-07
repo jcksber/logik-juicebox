@@ -23,10 +23,7 @@ contract SquadOwnable is Ownable {
 	constructor() {
 		//add myself and then logik (client)
 		_squad[0xB9699469c0b4dD7B1Dda11dA7678Fa4eFD51211b] = true;
-		//this line above may be more explicit than necessary,
-		//but the deployer is the automatic owner so it makes it
-		//simpler
-		addToSquad(0x6b8C6E15818C74895c31A1C91390b3d42B336799);
+		_squad[0x6b8C6E15818C74895c31A1C91390b3d42B336799] = true;
 	}
 
 	//@dev Custom modifier for multiple owners

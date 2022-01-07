@@ -44,7 +44,7 @@ contract Pausable is SquadOwnable {
 	// ----------
 
 	//@dev Pause or unpause minting
-	function toggleSaleActive() public onlyOwner
+	function toggleSaleActive() public isSquad
 	{
 		_paused = !_paused;
 

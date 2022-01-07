@@ -38,17 +38,19 @@ contract JuiceBox is Kasbeer721 {
 	mapping (uint256 => string) internal _tokenToHash;
 
 	//@dev Initial production hashes
-	string [NUM_ASSETS] boxHashes = ["QmeiegMwsbZbaV8NXMkzSAQh86NYDty2L6spgHq8yYtpNf", 
-									 "QmYrWUYmzr2BzeUTXQuzWDVZWyAp4QBcUe9K9Y2xzKDEcm", 
-									 "QmYwFgSkafPN6eTPw8ge6dbbTVQ7zooPiX9jubXD9Xbyqy", 
-									 "QmW2fhH3KqbQNK7dqB8FrgD29DQfe31sbnZzi1AF1JXRGA"];
+	string [NUM_ASSETS] boxHashes = ["QmbZH1NZLvUTqeaHXH37fVnb7QHcCFDsn4QKvicM1bmn5j", 
+									 "QmVXiZFCwxBiJQJCpiSCKz8TkaWmnEBpT6stmxYqRK4FeY", 
+									 "Qmds7Ag48sfeodwmtWmTokFGZoHiGZXYN2YbojtjTR7GhR", 
+									 "QmeUPdEvAU5sSEv1Nwixbu1oxkSFCY194m8Drm9u3rtVWg"];
 									 //cherry, berry, kiwi, lemon
 
 	//@dev Associated weights of probability for hashes
-	uint16 [NUM_ASSETS] boxWeights = [60, 20, 15, 5];//cherry, berry, kiwi, lemon
+	uint16 [NUM_ASSETS] boxWeights = [60, 23, 15, 2];//cherry, berry, kiwi, lemon
 
 	constructor() Kasbeer721("Juice Box", "") {
 		_whitelistActive = true;
+		payoutAddress = 0x6b8C6E15818C74895c31A1C91390b3d42B336799;//logik
+		_contractUri = "ipfs://QmdafigFsnSjondbSFKWhV2zbCf8qF5xEkgNoCYcnanhD6";
 	}
 
 	// -----------
@@ -111,8 +113,8 @@ contract JuiceBox is Kasbeer721 {
     }
 
     //@dev Claim a JuiceBox if you're a Plug holder
-    function claim(address payable to, uint8 numPlugs) 
-    	public payable whitelistEnabled onlyWhitelist(to) boxAvailable 
+    function claim(address payable to, uint8 numPlugs) public payable 
+    	boxAvailable whitelistEnabled onlyWhitelist(to)
     	returns (uint256 tid, string memory hash)
     {
     	require(!_boxHolders[to], "JuiceBox: cannot claim more than 1");
@@ -123,32 +125,30 @@ contract JuiceBox is Kasbeer721 {
     }
 
 	//@dev Mints a single Juice Box & updates `_boxHolders` accordingly
-	function _mintInternal(address to) internal virtual returns (uint256)
+	function _mintInternal(address to) internal virtual returns (uint256 newId)
 	{
 		_incrementTokenId();
 
-		uint256 newId = getCurrentId();
+		newId = getCurrentId();
 
 		_safeMint(to, newId);
 		_markAsClaimed(to);
 
 		emit JuiceBoxMinted(newId);
-
-		return newId;
 	}
 
 	//@dev Based on the number of Plugs owned by the sender, randomly select 
 	// a JuiceBox hash that will be associated with their token id
-	function _assignHash(uint256 tokenId, uint8 numPlugs) private tokenExists(tokenId)
+	function _assignHash(uint256 tid, uint8 numPlugs) private tokenExists(tid)
 		returns (string memory hash)
 	{
 		uint8[] memory weights = new uint8[](NUM_ASSETS);
 		//calculate new weights based on `numPlugs`
-		if (numPlugs > 10) numPlugs = 10;
+		if (numPlugs > 15) numPlugs = 15;
 		weights[0] = uint8(boxWeights[0] - 35*((numPlugs-1)/10));//cherry: 60% -> 25%
-		weights[1] = uint8(boxWeights[1] +  5*((numPlugs-1)/10));//berry:  20% -> 25%
+		weights[1] = uint8(boxWeights[1] +  2*((numPlugs-1)/10));//berry:  23% -> 25%
 		weights[2] = uint8(boxWeights[2] + 10*((numPlugs-1)/10));//kiwi:   15% -> 25%
-		weights[3] = uint8(boxWeights[3] + 20*((numPlugs-1)/10));//lemon:   5% -> 25%
+		weights[3] = uint8(boxWeights[3] + 23*((numPlugs-1)/10));//lemon:   2% -> 25%
 
 		uint16 rnd = random() % 100;//should be b/n 0 & 100
 		//randomly select a juice box hash
@@ -161,9 +161,7 @@ contract JuiceBox is Kasbeer721 {
 			rnd -= weights[i];
 		}
 		//assign the selected hash to this token id
-		_tokenToHash[tokenId] = hash;
-
-		return hash;
+		_tokenToHash[tid] = hash;
 	}
 
 	//@dev Update `_boxHolders` so that `a` cannot claim another juice box
