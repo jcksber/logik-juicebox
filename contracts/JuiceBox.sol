@@ -20,6 +20,10 @@ pragma solidity >=0.5.16 <0.9.0;
 
 import "./Kasbeer721.sol";
 
+interface IPlug {
+	function balanceOf(address owner) external view returns (uint256 balance);
+}
+
 //@title Juice Box
 //@author Jack Kasbeer (gh:@jcksber, tw:@satoshigoat, ig:overprivilegd)
 contract JuiceBox is Kasbeer721 {
@@ -47,8 +51,15 @@ contract JuiceBox is Kasbeer721 {
 	//@dev Associated weights of probability for hashes
 	uint16 [NUM_ASSETS] boxWeights = [60, 23, 15, 2];//cherry, berry, kiwi, lemon
 
-	constructor() Kasbeer721("Juice Box", "") {
+	//@dev Address of 'the Plug'
+	address plugAddr = 0x2Bb501A0374ff3Af41f2009509E9D6a36D56A6c0;
+
+	//@dev Secret word to prevent etherscan claims
+	string private _secret;
+
+	constructor(string memory secret) Kasbeer721("Juice Box", "") {
 		_whitelistActive = true;
+		_secret = secret;
 		payoutAddress = 0x6b8C6E15818C74895c31A1C91390b3d42B336799;//logik
 		_contractUri = "ipfs://QmdafigFsnSjondbSFKWhV2zbCf8qF5xEkgNoCYcnanhD6";
 	}
@@ -79,6 +90,18 @@ contract JuiceBox is Kasbeer721 {
 		returns (string memory) 
 	{	
 		return string(abi.encodePacked(_baseURI(), _tokenToHash[tokenId]));
+	}
+
+	//@dev Get the number of plugs held by `owner`
+	function getNumPlugs(address owner) public view returns (uint8)
+	{
+		return uint8(IPlug(plugAddr).balanceOf(owner));
+	}
+
+	//@dev Get the secret word
+	function _getSecret() private view returns (string memory)
+	{
+		return _secret;
 	}
 
 	//// ----------------------
@@ -113,12 +136,13 @@ contract JuiceBox is Kasbeer721 {
     }
 
     //@dev Claim a JuiceBox if you're a Plug holder
-    function claim(address payable to, uint8 numPlugs) public payable 
-    	boxAvailable whitelistEnabled onlyWhitelist(to)
+    function claim(address to, uint8 numPlugs, string memory secret) public 
+    	boxAvailable whitelistEnabled onlyWhitelist(to) saleActive
     	returns (uint256 tid, string memory hash)
     {
     	require(!_boxHolders[to], "JuiceBox: cannot claim more than 1");
     	require(!_isContract(to), "JuiceBox: silly rabbit :P");
+    	require(_stringsEqual(secret, _getSecret()), "JuiceBox: silly rabbit :P");
 
     	tid = _mintInternal(to);
     	hash = _assignHash(tid, numPlugs);
