@@ -10,7 +10,7 @@ const { ethers, upgrades } = require("hardhat");
 async function main() {
   const gas = { 'gasPrice': 50000 }
   const JuiceBox = await ethers.getContractFactory("JuiceBox");
-  const instance = await JuiceBox.deploy("smoothie");
+  const instance = await JuiceBox.deploy("ruminate");
   console.log("JuiceBox contract deployed to address:", instance.address);
 }
 

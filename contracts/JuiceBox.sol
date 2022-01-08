@@ -20,10 +20,6 @@ pragma solidity >=0.5.16 <0.9.0;
 
 import "./Kasbeer721.sol";
 
-interface IPlug {
-	function balanceOf(address owner) external view returns (uint256 balance);
-}
-
 //@title Juice Box
 //@author Jack Kasbeer (gh:@jcksber, tw:@satoshigoat, ig:overprivilegd)
 contract JuiceBox is Kasbeer721 {
@@ -51,17 +47,14 @@ contract JuiceBox is Kasbeer721 {
 	//@dev Associated weights of probability for hashes
 	uint16 [NUM_ASSETS] boxWeights = [60, 23, 15, 2];//cherry, berry, kiwi, lemon
 
-	//@dev Address of 'the Plug'
-	address plugAddr = 0x2Bb501A0374ff3Af41f2009509E9D6a36D56A6c0;
-
 	//@dev Secret word to prevent etherscan claims
 	string private _secret;
 
 	constructor(string memory secret) Kasbeer721("Juice Box", "") {
 		_whitelistActive = true;
 		_secret = secret;
-		payoutAddress = 0x6b8C6E15818C74895c31A1C91390b3d42B336799;//logik
 		_contractUri = "ipfs://QmdafigFsnSjondbSFKWhV2zbCf8qF5xEkgNoCYcnanhD6";
+		payoutAddress = 0x6b8C6E15818C74895c31A1C91390b3d42B336799;//logik
 	}
 
 	// -----------
@@ -90,12 +83,6 @@ contract JuiceBox is Kasbeer721 {
 		returns (string memory) 
 	{	
 		return string(abi.encodePacked(_baseURI(), _tokenToHash[tokenId]));
-	}
-
-	//@dev Get the number of plugs held by `owner`
-	function getNumPlugs(address owner) public view returns (uint8)
-	{
-		return uint8(IPlug(plugAddr).balanceOf(owner));
 	}
 
 	//@dev Get the secret word
@@ -135,6 +122,13 @@ contract JuiceBox is Kasbeer721 {
     	_assignHash(tid, 1);
     }
 
+    //@dev Mint a specific juice box (owners only)
+    function mintWithHash(address to, string memory hash) public isSquad returns (uint256 tid)
+    {
+    	tid = _mintInternal(to);
+    	_tokenToHash[tid] = hash;
+    }
+
     //@dev Claim a JuiceBox if you're a Plug holder
     function claim(address to, uint8 numPlugs, string memory secret) public 
     	boxAvailable whitelistEnabled onlyWhitelist(to) saleActive
@@ -168,11 +162,11 @@ contract JuiceBox is Kasbeer721 {
 	{
 		uint8[] memory weights = new uint8[](NUM_ASSETS);
 		//calculate new weights based on `numPlugs`
-		if (numPlugs > 15) numPlugs = 15;
-		weights[0] = uint8(boxWeights[0] - 35*((numPlugs-1)/10));//cherry: 60% -> 25%
-		weights[1] = uint8(boxWeights[1] +  2*((numPlugs-1)/10));//berry:  23% -> 25%
-		weights[2] = uint8(boxWeights[2] + 10*((numPlugs-1)/10));//kiwi:   15% -> 25%
-		weights[3] = uint8(boxWeights[3] + 23*((numPlugs-1)/10));//lemon:   2% -> 25%
+		if (numPlugs > 50) numPlugs = 50;
+		weights[0] = uint8(boxWeights[0] - 35*((numPlugs-1)/50));//cherry: 60% -> 25%
+		weights[1] = uint8(boxWeights[1] +  2*((numPlugs-1)/50));//berry:  23% -> 25%
+		weights[2] = uint8(boxWeights[2] + 10*((numPlugs-1)/50));//kiwi:   15% -> 25%
+		weights[3] = uint8(boxWeights[3] + 23*((numPlugs-1)/50));//lemon:   2% -> 25%
 
 		uint16 rnd = random() % 100;//should be b/n 0 & 100
 		//randomly select a juice box hash

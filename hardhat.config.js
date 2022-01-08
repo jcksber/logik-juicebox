@@ -65,7 +65,7 @@ module.exports = {
     },
     mainnet: {
       url: PRODUCTION_INFURA_API_URL,
-      accounts: [`0x${STAGING_PRIVATE_KEY}`],
+      accounts: [`0x${PRODUCTION_PRIVATE_KEY}`],
     }
   },
   gasReporter: {

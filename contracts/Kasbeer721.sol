@@ -39,7 +39,7 @@ contract Kasbeer721 is ERC721, Whitelistable, Pausable {
 
 	//@dev Important numbers
 	uint constant NUM_ASSETS = 4;//4 juice box variations
-	uint constant MAX_NUM_TOKENS = 111;
+	uint constant MAX_NUM_TOKENS = 413;//nomad+chi+st.l dream chasers
 
 	//@dev Properties
 	string internal _contractUri;
